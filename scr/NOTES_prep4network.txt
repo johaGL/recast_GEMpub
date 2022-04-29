@@ -1,0 +1,103 @@
+################################ 
+#### biological notes:
+###############################
+* I checked if 'Monocarboxylate Transporter' or SLC16 family or 'Central carbon metabolism in cancer' are  present in human metabolic atlas HMA:
+Yes it is https://metabolicatlas.org/explore/Human-GEM/gem-browser/gene/ENSG00000118596 with several hits for Subsystem "Transport reactions", here one of them:
+reactionID  equation    genes   Subsystem   compartment 
+MAR06050 	(R)-3-hydroxybutanoate [c] + L-lactate [s] ⇔ (R)-3-hydroxybutanoate [s] + L-lactate [c]	SLC16A3 , SLC16A7 , SLC16A8 , SLC16A6 , SLC16A5 , SLC16A4 , SLC16A1 	Transport reactions 	Cytosol + Extracellular 
+
+* The other pathways already known are present in HMA, as seen in research square manuscript
+
+* [ subject appart ] SLC16 query in KEGG, yields 'Central carbon metabolism in cancer' with normal and malignant cells depicted, see cocultureProj/scr4 pathview using Neuro and P3 logFC's.
+
+* For huge network construction, then keep in mind:
+        0. We have two GEMs : brain (healthy) and U251 (glioblastoma)
+        1. metabolites and proteins are all included , represent as Bipartite Graph(s)
+        2. if more than two cell types (neuron, P3, etc) build separately 
+        each network. Then set suffix names: "_neuron" or "_P3" to each element
+        3. seek for each metabolite if they are intra or extra cellular
+                (can be consulted with Thomas)
+        4. for intracellular metabolites, keep relations in their initial cell type
+        5. for extracellular metabolites, create edge with the other cell type:
+            needs knowledge about the transporter or channel in the other cell type!
+ 
+################################ 
+#### operational notes:
+###############################
+
+ # ** what was done by A Coffe: **
+
+* I checked the folder /home/acoffe/integration_job/:
+there is a file : "/home/acoffe/integration_job/data_HMA/U-251MG.xml-91080a939b86d903928cb7e2c321c2ff/U-251 MG.xml"     
+whose first lines:
+```
+<?xml version="1.0" encoding="UTF-8" ?><sbml xmlns="http://www.sbml.org/sbml/level2/version3" level="2" version="3"><model metaid="metaid_INITModel" id="INITModel" name="Automatically generated model for RNA - U-251 MG"><notes><body xmlns="http://www.w3.org/1999/xhtml">This file was generated using the exportModel function in RAVEN Toolbox</body></notes>
+<annotation><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/"><rdf:Description rdf:about="#metaid_INITModel"><dcterms:created rdf:parseType="Resource"><dcterms:W3CDTF>2014-09-24T14:59:01Z</dcterms:W3CDTF></dcterms:created><dcterms:modified rdf:parseType="Resource"><dcterms:W3CDTF>2014-09-24T14:59:01Z</dcterms:W3CDTF></dcterms:modified></rdf:Description></rdf:RDF></annotation><listOfUnitDefinitions><unitDefinition id="mmol_per_gDW_per_hr"><listOfUnits><unit kind="mole" scale="-3"/><unit kind="second" multiplier="0.00027778" exponent="-1"/></listOfUnits></unitDefinition></listOfUnitDefinitions><listOfCompartments><compartment metaid="metaid_C_s" id="C_s" name="Extracellular"
+```
+seem to indicate that these are all the metabolites and enzymes of the glioblastoma cell line U-251
+Cannot find how this list was obtained !! 
+to note, RAVEN is a commonly used MATLAB toolbox for genome-scale metabolic model (GEM) reconstruction, curation and constraint-based modelling .
+I looked biomodels : 
+
+*  There is a connection with HMA that works but needs a list of genes or a list of metabolites, if willing to pull ALL reactions this will not work, because this will always give a subset by our genes or metabolites input.
+there is a file "Metabo_brain_graph.json" which is the fetched pathways with a list of genes in the file 
+
+* Solved enigma xml file U-251: 
+    wget https://metabolicatlas.org/api/v2/repository/models/homo_sapiens/cell-line_specific_models/brain/U-251MG.xml-91080a939b86d903928cb7e2c321c2ff.zip
+    
+
+ # **  I did   **
+ * get the GEM for Glioblastoma ==>  ok U-251
+ * get brain (healthy) == > wget https://metabolicatlas.org/api/v2/repository/models/homo_sapiens/tissue-specific_models/brain/brain.xml-0cc137f6eff1e44d85b0813c28a482f7.zip
+ 
+ * build dictionnaries for each category:
+      brain_normal
+      gbm
+      
+THINK ABOUT
+ * creating toy dictionary to make plots to see what I am doing
+ explore the dictionnaries
+ 
+PPI side (!! wait, do first co-expression !!) : 
+  * ? get from HMA all the reactions, genes and metabolites, brain or not  == whole organs 
+  or
+  *  ? get from human PROTEIN atlas all the RNAs annotated in the BRAIN  https://www.proteinatlas.org/search/Brain
+  or
+  * download PPI from ?
+  
+  
+###################
+# parsing xml : problems and solutions
+##################
+I printed the line(s) of occurrence of E_2570 entry in brain.xml: 
+```
+johanna@pop-os:/home/johanna/GEMdwld$ grep -n E_2570 brain.xml
+7073:<species metaid="metaid_E_2570" id="E_2570" name="ENSG00000168389" compartment="C_c" initialAmount="0" sboTerm="SBO:0000014"></species>
+11120:<reaction metaid="metaid_R_HMR_0376" id="R_HMR_0376" name="" reversible="false" sboTerm="SBO:0000176"><notes><body xmlns="http://www.w3.org/1999/xhtml"><p>SUBSYSTEM: Transport, extracellular</p><p>COMPARTMENT: l</p></body></notes><annotation><rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/"><rdf:Description rdf:about="#metaid_R_HMR_0376"><bqbiol:is><rdf:Bag><rdf:li rdf:resource="urn:miriam:ec-code:TCDB:4.C.1.1.5"/><rdf:li rdf:resource="urn:miriam:ec-code:TCDB:4.C.1.1.8"/></rdf:Bag></bqbiol:is></rdf:Description></rdf:RDF></annotation><listOfReactants><speciesReference species="M_m01689s" stoichiometry="1"/></listOfReactants><listOfProducts><speciesReference species="M_m01689c" stoichiometry="1"></speciesReference></listOfProducts><listOfModifiers><modifierSpeciesReference species="E_768" /><modifierSpeciesReference species="E_938" /><modifierSpeciesReference species="E_1072" /><modifierSpeciesReference species="E_1189" /><modifierSpeciesReference species="E_1416" /><modifierSpeciesReference species="E_1786" /><modifierSpeciesReference species="E_1830" /><modifierSpeciesReference species="E_1836" /><modifierSpeciesReference species="E_1911" /><modifierSpeciesReference species="E_2009" /><modifierSpeciesReference species="E_2570" /></listOfModifiers><kineticLaw><math xmlns="http://www.w3.org/1998/Math/MathML"><ci>FLUX_VALUE</ci></math><listOfParameters><parameter id="LB_R_HMR_0376" name="LOWER_BOUND" value="     0.00000000" units="mmol_per_gDW_per_hr"/><parameter id="UB_R_HMR_0376" name="UPPER_BOUND" value="  1000.00000000" units="mmol_per_gDW_per_hr"/><parameter id="OBJ_R_HMR_0376" name="OBJECTIVE_COEFFICIENT" value="     0.00000000" units="dimensionless"/><parameter id="FLUX_VALUE" value="0.00000000" units="mmol_per_gDW_per_hr"/></listOfParameters></kineticLaw></reaction>
+ ```
+so "species" can be the enzyme or metabolite! ,
+I added the element from speciesReference species="M_m01689s"  (it is, M_m0...) to dictionnaries creation
+to be able to connect "species" infos with "reaction" infos.
+saved to pickle 
+
+#############
+## explored dictionnaries
+##############
+A. realized that speciesReference is not the connector among "species" and "reaction" tags, enzymes start with "E_". These were found in sub-tags 
+and reference
+
+B. revising the symbols, all lactate transporters are found : SLC13A1 SLC16A3 SLC16A7 , and glutamate trans SLC1A3. LDHB is there, but NOT LDHA !. 
+
+NOTE: Ensembl deprecated identifiers were found:
+ensids	symbols
+ENSG00000132142	NOTFOUND
+ENSG00000141141	NOTFOUND
+ENSG00000141720	NOTFOUND
+ENSG00000161326	NOTFOUND
+ENSG00000182319	NOTFOUND
+ENSG00000182851	NOTFOUND
+ENSG00000184674	NOTFOUND
+ENSG00000184886	NOTFOUND
+ENSG00000240224	NOTFOUND
+ENSG00000243135	NOTFOUND
+

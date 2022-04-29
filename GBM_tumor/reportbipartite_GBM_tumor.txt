@@ -1,0 +1,9 @@
+----------------------------------------             
+GBM_tumor
+----------------------------------------
+Transformed GEM dictionnary into list of Edges
+number of reactions : 4669
+Edges : 57537       
+Nodes       
+	genes : 2194
+	metabolites : 4209
