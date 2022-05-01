@@ -5,15 +5,15 @@ Created on Mon Apr 18 18:58:41 2022
 
 @author: johanna
 examples:
-python3 GEMformatter.py --xml ~/datapub/GEM/0_dwld/brain.xml \
+python3 GEMformatter.py --xml ~/datapub/GEM/brain.xml \
        --mywdir ~/recast_GEMpub/ --suffix brain_normal \
        --biomartfile "~/cocultureProj/biomart_db/bm_human.rds" 
        
-python3 GEMformatter.py --xml ~/datapub/GEM/0_dwld/U-251MG.xml \
+python3 GEMformatter.py --xml ~/datapub/GEM/U-251MG.xml \
    --mywdir ~/recast_GEMpub/ --suffix GBM_tumor \
    --biomartfile "~/cocultureProj/biomart_db/bm_human.rds" 
    
-
+NOTE: if in bb8 : --xml /scratch/CBIB/jgalvis/datapub/GEM/U-251MG.xml
 """
 import os
 import argparse
