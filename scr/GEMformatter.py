@@ -86,16 +86,16 @@ newgenes_sym_D = exchangekeydico(genesD, "symbol", "id")
 groupedD = {'enzy_reac_prod':enzy_reac_prod,
             'genes' : newgenes_sym_D,
             'metabolites': newmetsD}  
-with open(f'{args.suffix}/HMAdictio_{args.suffix}.pkl','wb') as f:
+with open(f'{args.suffix}/dictioFull_{args.suffix}.pkl','wb') as f:
     pk.dump(obj=groupedD, file=f)
 
 print("saved dictionary of dictionaries: enzy_reac_prod, genes and metabolites")
-print(f'\t {args.suffix}/HMAdictio_{args.suffix}.pkl')
+print(f'\t {args.suffix}/dictioFull_{args.suffix}.pkl')
         
 """
 C)  bipartite
 """    
-with open(f'{args.suffix}/HMAdictio_{args.suffix}.pkl', "rb") as f:
+with open(f'{args.suffix}/dictioFull_{args.suffix}.pkl', "rb") as f:
     GEM = pickle.load(f)  
 print(GEM.keys())
 edges_ = allmetaboedges(GEM)

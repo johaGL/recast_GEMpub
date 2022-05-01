@@ -66,7 +66,7 @@ if __name__ == "__main__":
     mywdir = os.path.expanduser("~/recast_GEMpub/")
     os.chdir(mywdir)
     suffix = "GBM_tumor"
-    gemfi=f"{suffix}/HMAdictio_{suffix}.pkl"
+    gemfi=f"{suffix}/dictioFull_{suffix}.pkl"
     with open(gemfi, "rb") as f:
         GEM = pickle.load(f)  
     print(GEM.keys())

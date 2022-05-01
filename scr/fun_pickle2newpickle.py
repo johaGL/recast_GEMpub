@@ -266,7 +266,7 @@ if __name__=='__main__':
     groupedD = {'enzy_reac_prod':enzy_reac_prod,
                 'genes' : newgenes_sym_D,
                 'metabolites': newmetsD}  
-    with open(f'{suffix}/HMAdictio_{suffix}.pkl','wb') as f:
+    with open(f'{suffix}/dictioFull_{suffix}.pkl','wb') as f:
         pk.dump(obj=groupedD, file=f)
             
     ## END
