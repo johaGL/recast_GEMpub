@@ -84,7 +84,12 @@ if __name__ == "__main__":
     print("saved")
     G = nx.Graph()
     G.add_edges_from(edges_)
+    
     boolbipartite = nx.is_bipartite(G)
+    
+    with open(f"reportbipartite_{suffix}.txt", "a") as f:
+        f.writelines([f"\nis bipartite : {boolbipartite}"])
+        
     print(f"The graph from these Edges, is it bipartite?: *{boolbipartite}*")
 
     X, Y = bipartite.sets(G)

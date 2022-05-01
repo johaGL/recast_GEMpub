@@ -19,7 +19,7 @@ import os
 import argparse
 from fun_GEMxml2pickle import *
 from fun_pickle2newpickle import *
-from bipartite_fromGEM import *
+from fun_bipartiteGEM import *
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--xml" , help="full path to the xml")
@@ -100,11 +100,6 @@ with open(f'{args.suffix}/HMAdictio_{args.suffix}.pkl', "rb") as f:
 print(GEM.keys())
 edges_ = allmetaboedges(GEM)
 
-G = nx.Graph()
-G.add_edges_from(edges_)
-boolbipartite = nx.is_bipartite(G)
-print(f"The graph from these Edges, is it bipartite?: *{boolbipartite}*")
-
 edges4txt = [ "\t".join(i)+"\n" for i in edges_ ]
 
 bipafile = f'{args.suffix}/bipartite_{args.suffix}.txt'
@@ -114,5 +109,13 @@ with open(bipafile, "w") as f:
 sms = doreportbipartite(args.suffix,GEM, edges_)
 with open(f"{args.suffix}/reportbipartite_{args.suffix}.txt", "w") as f:
     f.writelines(sms)    
+    
+G = nx.Graph()
+G.add_edges_from(edges_)
+boolbipartite = nx.is_bipartite(G)
+print(f"The graph from these Edges, is it bipartite?: *{boolbipartite}*")
+# add line to auto report:
+with open(f"{args.suffix}/reportbipartite_{args.suffix}.txt", "a") as f:
+    f.writelines([f"\nis bipartite : {boolbipartite}"])
 
 print(f"saved bipartite graph: {bipafile} ")

@@ -7,3 +7,4 @@ Edges : 57537
 Nodes       
 	genes : 2194
 	metabolites : 4209
+is bipartite : True
