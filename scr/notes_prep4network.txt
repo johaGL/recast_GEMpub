@@ -1,6 +1,34 @@
 ################################ 
 #### biological notes:
 ###############################
+
+
+##############################
+# metabolites nomenclature
+##############################
+
+thename|thecompartment
+
+All possible compartments:
+C_c : cytoplasmic
+C_g : golgi apparaus
+C_l : lysosomal
+C_m : mitochondria
+C_n : nucleus
+C_p : peroxisome
+C_r : endoplasmic reticulum ?
+C_s : secreted
+
+source: https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2680896/
+
+How to see them : 
+cat bipartite_GBM_tumor.txt | cut -f 2 | cut -d "|" -f 2 | sort | uniq
+
+
+###############################
+# MCT family
+################################
+
 * I checked if 'Monocarboxylate Transporter' or SLC16 family or 'Central carbon metabolism in cancer' are  present in human metabolic atlas HMA:
 Yes it is https://metabolicatlas.org/explore/Human-GEM/gem-browser/gene/ENSG00000118596 with several hits for Subsystem "Transport reactions", here one of them:
 reactionID  equation    genes   Subsystem   compartment 
@@ -100,4 +128,6 @@ ENSG00000184674	NOTFOUND
 ENSG00000184886	NOTFOUND
 ENSG00000240224	NOTFOUND
 ENSG00000243135	NOTFOUND
+
+
 
