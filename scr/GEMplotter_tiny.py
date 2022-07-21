@@ -28,7 +28,7 @@ erp[6]
 
 G = nx.Graph()
 
-
+# retrieve just first 1000 reactions, directly from dictionnary (pickle)
 for k in range(0,1000):
     edgeshere = []
     for z in erp[k]['enzymes']:
@@ -53,8 +53,8 @@ nx.draw_networkx_nodes(G, pos, nodelist=enzymes, node_color='green',
                        alpha=0.5,node_shape = 's')
 nx.draw_networkx_nodes(G, pos, nodelist=mets, node_color="orange",
                        alpha=0.5, node_shape = 'o')
-nx.draw_networkx_edges(G, pos, edge_color="white", alpha=0.7)
-ax.set_facecolor('lightgray')
-plt.savefig('yeeee', dpi=300)
+nx.draw_networkx_edges(G, pos, edge_color="gray", alpha=0.7)
+ax.set_facecolor('white')
+plt.savefig('mypltfigure.png', dpi=300)
 
 enzymes
