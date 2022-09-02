@@ -3,7 +3,7 @@
 """
 Created on Fri Sep  2 11:31:12 2022
 
-Generates pickle dictionaries of the newest full human GEM (21 june 2022)
+Generates Edges list file, from the newest full human GEM (21 june 2022)
 which was downloaded from:
     https://github.com/SysBioChalmers/Human-GEM/blob/main/model/Human-GEM.yml
 note: SysBioChalmers is the team of the Human Metabolic Atlas
