@@ -1,0 +1,10 @@
+abbreviation,compartment
+e,Extracellular
+x,Peroxisome
+m,Mitochondria
+c,Cytosol
+l,Lysosome
+r,Endoplasmic reticulum
+g,Golgi apparatus
+n,Nucleus
+i,Inner mitochondria

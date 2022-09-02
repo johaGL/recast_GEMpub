@@ -1,0 +1,9 @@
+----------------------------------------        
+hum_whole
+----------------------------------------
+Transformed GEM dictionnary into list of Edges
+number of reactions *involving gene(s)* : 8022
+Edges : 143864  
+Nodes  
+	genes : 3067
+	metabolites : 8369
