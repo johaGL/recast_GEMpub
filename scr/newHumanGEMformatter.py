@@ -176,7 +176,7 @@ mets2022  = dometsdico(doc)
 rsrs = updatemets(rsrs,mets2022)
 print("end step 2 ")
 
-ofile = f"{args.suffix}/{args.suffix}_bipartite.txt"
+ofile = f"{args.suffix}/bipartite_{args.suffix}.txt"
 rsrs2bipatxt(rsrs, ofile)
 
 
