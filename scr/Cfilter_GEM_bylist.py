@@ -6,17 +6,24 @@ Created on Mon Aug 29 12:23:37 2022
 @author: johanna
 
 examples :     
-    python3 filter_GEM_bylist.py \
+    python3 Cfilter_GEM_bylist.py \
           --mywdir ~/recast_GEMpub/ \
           --ifile brain_normal/bipartite_brain_normal.txt \
           --odir brain_normal/ \
           --suffix brain_normal
           
-   python3 filter_GEM_bylist.py \
+   python3 Cfilter_GEM_bylist.py \
        --mywdir ~/recast_GEMpub/ \
        --ifile GBM_tumor/bipartite_GBM_tumor.txt \
        --odir GBM_tumor/ \
        --suffix GBM_tumor
+       
+       python3 Cfilter_GEM_bylist.py \           
+       --mywdir ~/recast_GEMpub/ \          
+       --ifile hum_whole/bipartite_hum_whole.txt \
+       --odir hum_whole/ \
+    --suffix hum_whole
+
 """
 
 import sys
@@ -100,8 +107,10 @@ print(f"List of promiscuous vertices {promiscuous} \n ")
 print(f"\n Step a) ")   
 Gm = G.copy()
 preexistingnodes = list(Gm.nodes)
-promiscuous_wicompartment = set([ n for n in preexistingnodes 
-                                 if n.split("|")[0] in promiscuous])
+print(len(preexistingnodes))
+print(preexistingnodes[:5])
+promiscuous_wicompartment = set([ p for p in preexistingnodes 
+                                 if str(p).split("|")[0] in promiscuous ])
 print(" nodes deleted by list", list(promiscuous_wicompartment)[:5], "...",
      list(promiscuous_wicompartment)[-5:] )
 
