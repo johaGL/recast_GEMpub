@@ -1,0 +1,17 @@
+Comparing : union brain tumor -vs- total human GEM 2022 
+
+number of edges containing lactate or glutamate transporters
+in total human GEM : 313
+in union brain tumor: 256
+
+important! : as compartment nomenclature is different (it changed in 2022)
+       just use metabolites without their compartment
+
+Differences among versions, this time with suppressed compartment:
+
+ ->  present in human-gem, but not in union-brain-tumor:
+{('URAD', '5-Hydroxy-2-oxo-4-ureido-2,5-dihydro-1H-imidazole-5-carboxylate')}
+ ->  present in union-brain-tumor, but not in human-gem:
+{('ALDH9A1', '4-aminobutyrate')}
+
+in conclusion, differences are negligible after suppressing the compartments
