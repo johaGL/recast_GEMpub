@@ -179,7 +179,7 @@ def rsrs2metedges(rsrs, ofile, promiscuous):
     alleds = list()
     for ktup in litups.keys():
         print(litups[ktup])
-        enzymesjoined = " ".join(litups[ktup])  
+        enzymesjoined = " ".join(list(set(litups[ktup])))
         x = ktup[0]
         y  = ktup[1]
         tmp = f"{x}\t{y}\t{enzymesjoined}\n" 
