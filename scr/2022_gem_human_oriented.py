@@ -10,7 +10,7 @@ obtain?????????????????????????,
 @author: johanna
 
 usage
-python3 2022_gem_human.py \
+python3 2022_gem_human_oriented.py \
     --yml ~/recast_GEMpub/data/GEM2022/Human-GEM.yml \
     --mywdir ~/recast_GEMpub/ --suffix hum_2022 \
         --biomartfile "~/cocultureProj/biomart_db/bm_human.rds"
@@ -44,6 +44,7 @@ def get_reacts_prods(listoftuples):
 def doc2rsrs(doc):
     """
     create dico REACTION_ID : {'enzymes': [xx|c, yy|...], 'metabolites' : []}
+    note: output still has only accession ids, not symbols nor names
     """
     rsrs = dict()
     orientedrs = dict()
@@ -51,24 +52,32 @@ def doc2rsrs(doc):
     for k_reaction in range(len(doc[2][1])):  # len(doc[2][1])
         llhere = doc[2][1][k_reaction]
         k_genes = re.split(" or | and ", llhere[5][1])
-        k_genes = [i.replace("(", "").replace(")", "") for i in k_genes]
+        k_genes = [i.replace("(", "").replace(")", "") for i in k_genes if i != ""]
 
-        if k_genes != ['']:  # no not add if not gene associated
+        #if k_genes != ['']:  # no not add if not gene associated # TODO :  delete this comment in future
             # print(llhere)
-            allgenesgem.update(k_genes)
-            # llhere :
-            # [('id', 'MAR03905'), ('name', 'ethanol:NAD+ oxidoreductase'), ('metabolites', [('MAM01249c', 1), ('MAM01796c', -1), ('MAM02039c', 1), ('MAM02552c', -1), ('MAM02553c', 1)]), ('lower_bound', 0), ('upper_bound', 1000), ('gene_reaction_rule', 'ENSG00000147576 or ENSG00000172955 or ENSG00000180011 or ENSG00000187758 or ENSG00000196344 or ENSG00000196616 or ENSG00000197894 or ENSG00000198099 or ENSG00000248144'), ('rxnNotes', ''), ('rxnFrom', 'HMRdatabase'), ('eccodes', '1.1.1.1;1.1.1.71'), ('references', 'PMID:10868354;PMID:12491384;PMID:12818203;PMID:14674758;PMID:15289102;PMID:15299346;PMID:15327949;PMID:15682493;PMID:15713978'), ('subsystem', ['Glycolysis / Gluconeogenesis']), ('confidence_score', 0)]
-            k_id_react = llhere[0][1]
-            kreacs, kprods = get_reacts_prods(llhere[2][1])
-            k_mets = [i for (i, j) in llhere[2][1]]
-            if k_id_react not in rsrs.keys():
-                rsrs[k_id_react] = {'enzymes': k_genes,
-                                    'metabolites': k_mets}
-                orientedrs[k_id_react] = {'enzymes': k_genes,
-                                         'reactants': kreacs,
-                                         'products' : kprods}
-            else:
-                print(f"ERROR, this reaction {k_id_react} is repeated")
+        allgenesgem.update(k_genes)
+        # llhere :
+        # [('id', 'MAR03905'), ('name', 'ethanol:NAD+ oxidoreductase'), ('metabolites', [('MAM01249c', 1), ('MAM01796c', -1), ('MAM02039c', 1), ('MAM02552c', -1), ('MAM02553c', 1)]), ('lower_bound', 0), ('upper_bound', 1000), ('gene_reaction_rule', 'ENSG00000147576 or ENSG00000172955 or ENSG00000180011 or ENSG00000187758 or ENSG00000196344 or ENSG00000196616 or ENSG00000197894 or ENSG00000198099 or ENSG00000248144'), ('rxnNotes', ''), ('rxnFrom', 'HMRdatabase'), ('eccodes', '1.1.1.1;1.1.1.71'), ('references', 'PMID:10868354;PMID:12491384;PMID:12818203;PMID:14674758;PMID:15289102;PMID:15299346;PMID:15327949;PMID:15682493;PMID:15713978'), ('subsystem', ['Glycolysis / Gluconeogenesis']), ('confidence_score', 0)]
+        k_id_react = llhere[0][1]
+        kreacs, kprods = get_reacts_prods(llhere[2][1])
+        k_mets = [i for (i, j) in llhere[2][1]]
+        reversible = False
+        lower_bound = llhere[3][1]
+        if lower_bound < 0:
+            reversible = True
+        if k_id_react not in rsrs.keys():
+            rsrs[k_id_react] = {'enzymes': k_genes,
+                                'metabolites': k_mets}
+            orientedrs[k_id_react] = {'enzymes': k_genes,
+                                     'reactants': kreacs,
+                                     'products' : kprods}
+            if reversible:
+                orientedrs[k_id_react+"|R"] = {'enzymes': k_genes,
+                                          'reactants': kprods,
+                                          'products': kreacs}
+        else:
+            print(f"ERROR, this reaction {k_id_react} is repeated")
     return rsrs, orientedrs, allgenesgem
 
 
@@ -115,8 +124,7 @@ def update_rsrs_genes(Xbm, allgenesgem, rsrs):
 def dometsdico(doc):
     """
     search metabolites names in yaml itself, do dictio
-    new ! : only compartment e (extracellular) kept,
-            all the other replaced by ic (intracellular)
+
     """
     mets2022 = dict()
     k_met = 0
@@ -132,10 +140,8 @@ def dometsdico(doc):
         k_name_met = doc[1][1][k_met][1][1]
         k_compartment_met = doc[1][1][k_met][2][1]
         if k_id_met not in mets2022.keys():
-            if k_compartment_met == "e":  # new !!
-                mets2022[k_id_met] = k_name_met + "|" + k_compartment_met
-            else:
-                mets2022[k_id_met] = k_name_met + "|ic"
+            # if k_compartment_met == "e":  # new !! # TODO: delete this comment
+            mets2022[k_id_met] = k_name_met + "|" + k_compartment_met
         else:
             "ERRORRRRRR: repeated metabolite id"
     return mets2022
@@ -221,9 +227,16 @@ def orientedrs2file(orientedrs, ofile, promiscuous):
     for k_reac in ori.keys():
         reacs = removepromiscuous(ori[k_reac]['reactants'], promiscuous)
         prods = removepromiscuous(ori[k_reac]['products'], promiscuous)
+        genespre = [i for i in ori[k_reac]["enzymes"] if i != '']
+        if (genespre is not None) and (genespre != ['']):
+            genestr = " ".join(genespre).strip()
+        elif (genespre is None) or (genespre == ['']):
+            genestr = "spontaneous"
+        else:
+            genestr = "spontaneous"
         for rea in reacs:
             for pro in prods:
-                tmp = ( k_reac, rea, pro, " ".join(ori[k_reac]["enzymes"]) )
+                tmp = ( k_reac, rea, pro,  genestr)
                 otuli.append(tmp)
     df = pd.DataFrame(otuli, columns=['id', 'from', 'to', 'nameslabel'])
     df.to_csv(ofile, sep='\t', header=True)
@@ -249,6 +262,7 @@ promiscuous = ["H2O", "H+", "H2O2", "O2", "Na+", "CO2", "CO",
                "NAD+", "NADH", "NADP+", "NADPH",
                "CoA", "acetyl-CoA"]
 
+# promiscuous = []
 os.chdir(args.mywdir)
 if not os.path.exists(os.path.join(os.getcwd(), args.suffix)):
     os.makedirs(args.suffix)
