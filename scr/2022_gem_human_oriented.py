@@ -25,6 +25,7 @@ from fun_bipartiteGEM import *
 import yaml
 import re
 import pandas as pd
+import pickle
 
 def get_reacts_prods(listoftuples):
     """
@@ -242,6 +243,25 @@ def orientedrs2file(orientedrs, ofile, promiscuous):
     df.to_csv(ofile, sep='\t', header=True)
     return 0
 
+def orientedrs2dicodump(orientedrs,  promiscuous):
+    """
+    :param orientedrs: dictionary of: reaction: { enzymes: ..., reactants: ..., products: ... }
+    :param promiscuous: list mets to exclude
+    :return: dictionary
+    """
+    ori = orientedrs.copy()
+    odic = dict()
+    for k_reac in ori.keys():
+        reacs = removepromiscuous(ori[k_reac]['reactants'], promiscuous)
+        prods = removepromiscuous(ori[k_reac]['products'], promiscuous)
+        genes_ = [i for i in ori[k_reac]["enzymes"] if i != '']
+        if (genes_ is None) or (genes_ == ['']) or (genes_ == []):
+            genes_ = ["spontaneous"]
+        odic[k_reac] = {'reactants': reacs,
+                       'products': prods,
+                       'genes' : genes_}
+    return odic
+
 
 
 #############
@@ -257,10 +277,10 @@ print(args.suffix)
 
 promiscuous = ["H2O", "H+", "H2O2", "O2", "Na+", "CO2", "CO",
                "[protein]", "phosphoprotein", "Pi", "PPi",
-               "AMP", "ADP", "ATP",
-               "CMP", "CDP", "GMP", "GDP", "UMP", "UDP",
-               "NAD+", "NADH", "NADP+", "NADPH",
-               "CoA", "acetyl-CoA"]
+               "AMP", "ADP", "ATP", "CMP", "CDP", "CTP",
+                "GMP", "GDP", "GTP", "UMP", "UDP", "UTP",
+               "NAD+", "NADH", "NADP+", "NADPH"]
+#               , "CoA", "acetyl-CoA"]
 
 # promiscuous = []
 os.chdir(args.mywdir)
@@ -295,6 +315,9 @@ rsrs2metedges(rsrs, ofilemets, promiscuous)
 ofileori = f"{args.suffix}/oriented_metTOmet_{args.suffix}.tsv"
 orientedrs2file(orientedrs, ofileori, promiscuous)
 
+odd = orientedrs2dicodump(orientedrs, promiscuous)
+with open("dico_oriented.pkl", "wb") as f:
+    pickle.dump(odd, f)
 #ofileori = f"{args.suffix}/oriented_metTOidreaTOmet_{args.suffix}.tsv"
 #orientedrs2file_newstyle(orientedrs, ofileori, promiscuous)
 #
